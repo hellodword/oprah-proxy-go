@@ -239,16 +239,19 @@ class OprahProxy:
         self.session.auth = HTTPDigestAuth2(client_type, client_key)
 
     def post(self, url, data):
-        headers = {'SE-Client-Type': self.client_type,
-                   'SE-Client-API-Key': self.client_key,
+        #headers = {'SE-Client-Type': self.client_type,
+        #           'SE-Client-API-Key': self.client_key,
+        #           'SE-Operating-System': 'Windows'}
+				   
+        headers = {'SE-Client-Version': 'beta 53.0.2907.31',
                    'SE-Operating-System': 'Windows'}
 
-        result = self.session.post('https://api.surfeasy.com%s' % url, data,
+        result = self.session.post('https://api.sec-tunnel.com%s' % url, data,
                                    headers=headers).json()
         
         code = list(result['return_code'].keys())[0]
         if code != '0':
-            logging.debug('ERROR: %s' % result['return_code'][code])
+            logging.error('ERROR: %s at %s' % (result['return_code'][code], url))
             exit(1)
         return result
 
@@ -291,22 +294,44 @@ class OprahProxy:
         codes = []
         for geo in result['data']['geos']:
             codes.append(geo['country_code'])
-            logging.info('Supported country: %s %s' %
+            logging.debug('Supported country: %s %s' %
                          (geo['country_code'], geo['country']))
         logging.debug('Geo list fetched')
         return codes
 
     def discover(self, country_code):
-        proxies = [{
-            'hostname': '%s.opera-proxy.net' % country_code.lower(),
-            'port': 443
-        }]
-        logging.info('Proxy in %s %s:%s' % (country_code, proxies[0]['hostname'], proxies[0]['port']))
+        logging.debug('Call discover %s' % country_code)
+        data = {'serial_no': self.device_id_hash,
+                'requested_geo': '"%s"' % country_code}
+        result = self.post('/v4/discover', data)
+        #logging.info('Your location is %s%s%s' %
+        #             (result['data']['requester_geo']['country_code'],
+        #              '/' if result['data']['requester_geo']['state_code'] else '',
+        #              result['data']['requester_geo']['state_code']))
+        #logging.debug(result)
+        proxies = []
+        for ip in result['data']['ips']:
+            for port in ip['ports']:
+                logging.info('Proxy in %s %s:%s' %
+                             (ip['geo']['country_code'],
+                              ip['ip'], port))
+                proxies.append({
+                    'ip': ip['ip'],
+                    'port': port,
+                    'country_code': ip['geo']['country_code']
+                    #'state_code': ip['geo']['state_code']
+                })
+        logging.debug('%s proxies discovered' % len(proxies))	
+        #proxies = [{
+        #    'hostname': '%s.opera-proxy.net' % country_code.lower(),
+        #    'port': 443
+        #}]
+        #logging.info('Proxy in %s %s:%s' % (country_code, proxies[0]['hostname'], proxies[0]['port']))
         return proxies
 
 if __name__ == '__main__':
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         format='%(asctime)s %(levelname)-8s %(message)s'
     )
 
@@ -340,7 +365,8 @@ if __name__ == '__main__':
     logging.debug('=============++===:::::::::::::::::::::~~~~~~~~~~~~~~~~~~~:~')
     logging.debug('https://github.com/spaze/oprah-proxy :::==~=~~~~~~~~=~~~~~~~')
 
-    key = '94938A583190AF928BC4FA2279DC10AE8FABB5E9E21826C9092B404D24B949A0'
+    #key = '94938A583190AF928BC4FA2279DC10AE8FABB5E9E21826C9092B404D24B949A0'
+    key = 'SILrMEPBmJuhomxWkfm3JalqHX2Eheg1YhlEZiMh8II'
     client = 'se0316'
     op = OprahProxy(client, key)
     op.register_subscriber()
@@ -349,7 +375,7 @@ if __name__ == '__main__':
     for country_code in op.geo_list():
         for item in op.discover(country_code):
             if not example_proxy and item['port'] == 443:
-                example_proxy = '%s:%s' % (item['hostname'], item['port'])
+                example_proxy = '%s:%s' % (item['ip'], item['port'])
 
     logging.info('Pick a proxy from the list above and use these credentials:')
     logging.info('Username: %s' % op.device_id_hash)
@@ -357,7 +383,7 @@ if __name__ == '__main__':
     creds = ('%s:%s' % (op.device_id_hash, op.device_password)).encode('ascii')
     header = 'Proxy-Authorization: Basic %s' % base64.b64encode(creds).decode('ascii')
     logging.info('HTTP header %s' % header)
-    logging.debug('Example bash command: URL="http://www.opera.com" PROXY=%s '
+    logging.info('Example bash command: URL="http://www.opera.com" PROXY=%s '
                   'HEADER="%s"; echo -e "GET $URL HTTP/1.0\\n$HEADER\\n\\n" | '
                   'openssl s_client -connect $PROXY -ign_eof' %
                   (example_proxy, header))
