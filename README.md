@@ -9,7 +9,7 @@ Opera "VPN" introduced in Opera 38 Developer Edition is not a VPN, it's actually
 
 ## Usage
 ```
-oprahProxy.py <client_type> <client_key>
+oprahProxy.py
 ```
 The script will generate credentials for you and list available proxies so you can use them elsewhere. `oprahProxy.py` can also be used as a Python module in your own application. Unfortunately I've had no success using any of these proxies as a proxy for `curl` for example. But it works with OpenSSL's `s_client` tool and the script will also print the required command for you.
 
