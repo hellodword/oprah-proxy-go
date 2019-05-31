@@ -243,7 +243,7 @@ class OprahProxy:
         #           'SE-Client-API-Key': self.client_key,
         #           'SE-Operating-System': 'Windows'}
 				   
-        headers = {'SE-Client-Version': 'beta 53.0.2907.31',
+        headers = {'SE-Client-Version': 'beta 60.0.3255.103',
                    'SE-Operating-System': 'Windows'}
 
         result = self.session.post('https://api.sec-tunnel.com%s' % url, data,
