@@ -258,7 +258,7 @@ class OprahProxy:
     def register_subscriber(self):
         logging.debug('Call register_subscriber')
         email = '%s@%s.surfeasy.vpn' % (uuid.uuid4(), self.client_type)
-        password = uuid.uuid4()
+        password = email
         password_hash = hashlib.sha1(
             str(password).encode('ascii')).hexdigest().upper()
         logging.debug('Your SurfEasy email: %s' % email)
