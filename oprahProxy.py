@@ -378,7 +378,7 @@ if __name__ == '__main__':
                 example_proxy = '%s:%s' % (item['ip'], item['port'])
 
     logging.info('Pick a proxy from the list above and use these credentials:')
-    logging.info('Username: %s' % op.device_id_hash)
+    logging.info('Username: %s' % op.device_id)
     logging.info('Password: %s' % op.device_password)
     creds = ('%s:%s' % (op.device_id_hash, op.device_password)).encode('ascii')
     header = 'Proxy-Authorization: Basic %s' % base64.b64encode(creds).decode('ascii')
