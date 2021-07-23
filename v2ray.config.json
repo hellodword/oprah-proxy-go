@@ -1,0 +1,37 @@
+{
+  "log": {
+    "loglevel": "debug"
+  },
+  "inbounds": [
+    {
+      "port": 1081,
+      "protocol": "http"
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "http",
+      "settings": {
+        "servers": [
+          {
+            "address": "77.111.245.11",
+            "port": 443,
+            "users": [
+              {
+                "user": "se0316-cbqa9jf2rzaddge8f48q",
+                "pass": "eyJhbGciOiJFQ0RILUVTK0EyNTZLVyIsImN0eSI6IkpXVCIsImVuYyI6IkEyNTZHQ00iLCJlcGsiOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsIngiOiJGV01BenlDeU9KMTI3a1V6alQxcWxsWmgtMmpXM242enBJVE1McUZma2FvIiwieSI6IkYtZHVXVERDaTBoOUFFUU8zRnI4UVd6aWtsR3haX3huR1NISEduQzBDeTAifX0.HQBrCbwdY1uLjEm-bClbARgCmTayErNB70NtD0IOpjJqNUAHDiNfOg.eWjmt0RoMxhP22aV.8FvMIfp4bYyaEcQOvli-5IsnFA2zQ8RyoSoThlsCTnA2UcZ9bOAXOoVU3m-20uA9RGdL0GhNeQt0anxmXRGwv0SLK8ZvfE5Pjkh7FFHQDE-YFf8-m6VYU9huLgSg5Yq6Zvul-IDPbSpUOoUtT9kJ8fEJQM62J2TyasoQUuvsF2zVWGCBHRJOhRaibR2lOYEtI59KwjTkSBU7z0gfEwHpCuK0HdN2f9RrzRKWe1DcFKDzPGPC2loOhRqVaCunhD-7S1ebNiENqjqvQVzAp0P8Okf5Ybz0BoY_OPGhPfvR6rY3lcHmTAF-GfFm_r4psfnkTXvR4JbCo-epElPrBOYWUVctdLuJDmlJIMzDKp_oeZoTVOSyHw8Qd-aeBwL4MpckeaZsfoXYj1xVwRgOppdmDW42h0zwb71vRpKEEv0J2spWxpVkf6BpdZyp5HJr4VcOBg.AaUJkN85Zg0rdFduE-w9ZQ"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "eu0.sec-tunnel.com"
+        }
+      }
+    }
+  ]
+}
