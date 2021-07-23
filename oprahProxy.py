@@ -12,7 +12,9 @@ import threading
 import warnings
 
 from base64 import b64encode
+import urllib3
 
+urllib3.disable_warnings()
 
 try:
     from requests.auth import AuthBase
@@ -313,7 +315,7 @@ class OprahProxy:
         proxies = []
         for ip in result['data']['ips']:
             for port in ip['ports']:
-                logging.info('Proxy in %s %s:%s' %
+                logging.debug('Proxy in %s %s:%s' %
                              (ip['geo']['country_code'],
                               ip['ip'], port))
                 proxies.append({
@@ -372,22 +374,19 @@ if __name__ == '__main__':
     op = OprahProxy(client, key)
     op.register_subscriber()
     op.register_device()
-    example_proxy = None
+
+
+    logging.debug('Username: %s' % op.device_id)
+    logging.debug('Password: %s' % op.device_password)
+
     for country_code in op.geo_list():
         for item in op.discover(country_code):
-            if not example_proxy and item['port'] == 443:
-                example_proxy = '%s:%s' % (item['ip'], item['port'])
+            if item['port'] == 443:
+                print('curl -s --proxy "https://%s:%s@eu0.sec-tunnel.com" --resolve eu0.sec-tunnel.com:443:%s http://httpbin.org/anything' %
+                  (op.device_id, op.device_password, item['ip']))
 
-    logging.info('Pick a proxy from the list above and use these credentials:')
-    logging.info('Username: %s' % op.device_id)
-    logging.info('Password: %s' % op.device_password)
-    creds = ('%s:%s' % (op.device_id_hash, op.device_password)).encode('ascii')
-    header = 'Proxy-Authorization: Basic %s' % base64.b64encode(creds).decode('ascii')
-    logging.info('HTTP header %s' % header)
-    logging.info('Example bash command: URL="http://www.opera.com" PROXY=%s '
-                  'HEADER="%s"; echo -e "GET $URL HTTP/1.0\\n$HEADER\\n\\n" | '
-                  'openssl s_client -connect $PROXY -ign_eof' %
-                  (example_proxy, header))
-    logging.debug('For PAC-file for other browsers see '
-                  'https://github.com/spaze/oprah-proxy#usage-with-other-browsers')
+
+
+    
+
 

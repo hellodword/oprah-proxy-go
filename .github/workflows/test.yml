@@ -1,0 +1,23 @@
+name: Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout v
+        uses: actions/checkout@v2
+
+      - name: oprah-proxy
+        run: |
+          python3 oprahProxy.py >output 2>&1
+          cat output
+
+      - name: upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: output
+          path: |
+            output
