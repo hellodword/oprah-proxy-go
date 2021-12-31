@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/hellodword/oprah-proxy-go"
 	"net/http"
@@ -26,18 +27,22 @@ func main() {
 		panic(err)
 	}
 
+	device.Data.Geos = geo.Data.Geos
+
 	for i := range geo.Data.Geos {
 		_, ip, err := o.Discover(device.Data.DeviceId, geo.Data.Geos[i].CountryCode)
 		if err != nil {
 			panic(err)
 		}
-		for j := range ip.Data.Ips {
-			fmt.Println(fmt.Sprintf(`curl -s --proxy "https://%s:%s@eu0.sec-tunnel.com" --resolve eu0.sec-tunnel.com:443:%s http://httpbin.org/anything`,
-				device.Data.DeviceId,
-				device.Data.DevicePassword,
-				ip.Data.Ips[j].Ip,
-			))
-		}
+		device.Data.Ips = append(device.Data.Ips, ip.Data.Ips...)
+		//for j := range ip.Data.Ips {
+		//	fmt.Println(fmt.Sprintf(`curl -s --proxy "https://%s:%s@eu0.sec-tunnel.com" --resolve eu0.sec-tunnel.com:443:%s http://httpbin.org/anything`,
+		//		device.Data.DeviceId,
+		//		device.Data.DevicePassword,
+		//		ip.Data.Ips[j].Ip,
+		//	))
+		//}
 	}
-
+	b, _ := json.Marshal(device.Data)
+	fmt.Println(string(b))
 }
